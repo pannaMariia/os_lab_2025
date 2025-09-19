@@ -1,0 +1,36 @@
+# .gitignore content:
+
+# Бинарные файлы и библиотеки
+*.o
+*.a
+*.so
+*.exe
+*.out
+*.dll
+
+# Исполняемые программы
+static_program
+dynamic_program
+program
+swap_program
+revert_program
+
+# Папки сборки
+build/
+dist/
+*.app
+
+# Системные файлы
+.DS_Store
+Thumbs.db
+
+# Резервные копии
+*~
+*.backup
+*.tmp
+
+# IDE файлы
+.vscode/
+.idea/
+*.swp
+*.swo
