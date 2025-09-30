@@ -1,17 +1,48 @@
 CC=gcc
 CFLAGS=-I.
+TARGETS=sequential_min_max parallel_min_max runner
 
-sequential_min_max : utils.o find_min_max.o utils.h find_min_max.h
-	$(CC) -o sequential_min_max find_min_max.o utils.o sequential_min_max.c $(CFLAGS)
+# Основная цель - собирает все программы
+all: $(TARGETS)
 
-parallel_min_max : utils.o find_min_max.o utils.h find_min_max.h
-	$(CC) -o parallel_min_max utils.o find_min_max.o parallel_min_max.c $(CFLAGS)
+# Последовательная версия
+sequential_min_max: sequential_min_max.o utils.o find_min_max.o
+	$(CC) -o $@ $^ $(CFLAGS)
 
-utils.o : utils.h
-	$(CC) -o utils.o -c utils.c $(CFLAGS)
+# Параллельная версия  
+parallel_min_max: parallel_min_max.o utils.o find_min_max.o
+	$(CC) -o $@ $^ $(CFLAGS)
 
-find_min_max.o : utils.h find_min_max.h
-	$(CC) -o find_min_max.o -c find_min_max.c $(CFLAGS)
+# Программа для запуска sequential_min_max
+runner: runner.o
+	$(CC) -o $@ $^ $(CFLAGS)
 
-clean :
-	rm utils.o find_min_max.o sequential_min_max parallel_min_max
+# Объектные файлы
+sequential_min_max.o: sequential_min_max.c utils.h find_min_max.h
+	$(CC) -o $@ -c $< $(CFLAGS)
+
+parallel_min_max.o: parallel_min_max.c utils.h find_min_max.h
+	$(CC) -o $@ -c $< $(CFLAGS)
+
+runner.o: runner.c
+	$(CC) -o $@ -c $< $(CFLAGS)
+
+utils.o: utils.c utils.h
+	$(CC) -o $@ -c $< $(CFLAGS)
+
+find_min_max.o: find_min_max.c find_min_max.h utils.h
+	$(CC) -o $@ -c $< $(CFLAGS)
+
+# Очистка
+clean:
+	rm -f *.o $(TARGETS)
+
+# Пересборка
+rebuild: clean all
+
+# Отладочная версия
+debug: CFLAGS += -g
+debug: rebuild
+
+# Псевдо-цели
+.PHONY: all clean rebuild debug
